@@ -14,12 +14,15 @@ update
 {
 	//print(current.level.ToString());
 	//print(vars.split.ToString());
-	print(current.levelSelect.ToString());
+	//print(current.levelSelect.ToString());
+	//print(((float)(current.level - 1) / 10).ToString());
 	return true;
 }
 
 startup
 {
+	settings.Add("splitType", true, "Split Every Level");
+	settings.SetToolTip("splitType", "This will configure the autosplitter to split on every level instead of splitting for each area.");
     vars.split = 1;
 }
 
@@ -35,7 +38,12 @@ start
 
 split
 {	
-    if (current.level > vars.split)
+    if (current.level > vars.split && settings["splitType"])
+	{
+		vars.split += 1;
+		return true;
+	}
+	else if (((float)current.level / 10) > vars.split)
 	{
 		vars.split += 1;
 		return true;

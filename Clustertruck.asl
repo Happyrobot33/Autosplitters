@@ -49,7 +49,7 @@ split
 		return true;
 	}
 }
-
+/*
 reset
 {
 	if (current.levelSelect == 0)
@@ -58,3 +58,4 @@ reset
 		return true;
 	}
 }
+*/

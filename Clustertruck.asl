@@ -13,6 +13,8 @@ init
 update
 {
 	//print(current.level.ToString());
+	//print(((current.level % 11) + 1).ToString());
+	//print(vars.split.ToString());
 	//print(vars.split.ToString());
 	//print(current.levelSelect.ToString());
 	//print(((float)(current.level - 1) / 10).ToString());
@@ -21,8 +23,10 @@ update
 
 startup
 {
-	settings.Add("splitType", true, "Split Every Level");
-	settings.SetToolTip("splitType", "This will configure the autosplitter to split on every level instead of splitting for each area.");
+	settings.Add("levelSplit", true, "Split Every Level");
+	settings.SetToolTip("levelSplit", "This will configure the autosplitter to split on every level instead of splitting for each area.");
+	settings.Add("areaSplit", false, "Single Area Splits");
+	settings.SetToolTip("areaSplit", "This will configure the autosplitter to split for only individual areas instead of the whole game.");
     vars.split = 1;
 }
 
@@ -37,12 +41,17 @@ start
 
 split
 {	
-    if (current.level > vars.split && settings["splitType"])
+	if (((current.level % 11) + 1) > vars.split && settings["areaSplit"])
 	{
 		vars.split += 1;
 		return true;
 	}
-	else if (((float)current.level / 10) > vars.split)
+    else if (current.level > vars.split && settings["levelSplit"] && !settings["areaSplit"])
+	{
+		vars.split += 1;
+		return true;
+	}
+	else if (((float)current.level / 10) > vars.split && !settings["areaSplit"])
 	{
 		vars.split += 1;
 		return true;
@@ -51,7 +60,12 @@ split
 
 reset
 {
-	if (current.levelSelect == 0)
+	if (current.levelSelect == 0 && ((current.level % 11) + 1) < vars.split && settings["areaSplit"])
+	{
+		vars.split = 1;
+		return true;
+	}
+	else if (current.levelSelect == 0 && current.level < vars.split)
 	{
 		vars.split = 1;
 		return true;

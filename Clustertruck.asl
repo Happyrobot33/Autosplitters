@@ -2,7 +2,7 @@ state("Clustertruck")
 {
 	//AutoSplitter Made my Happyrobot33
 	byte level : "mono.dll", 0x020B574, 0x10, 0x194, 0x0, 0x5C;
-	int levelSelect : "Clustertruck.exe", 0x0F38EDC, 0x28;
+	int levelSelect : "mono.dll", 0x01F30AC, 0x7D4, 0xC, 0x40, 0x90;
 }
 
 init
@@ -32,7 +32,7 @@ startup
 
 start
 {
-	if (current.levelSelect != 0)
+	if (current.levelSelect == 108)
 	{
 		return true;
 	}
@@ -60,12 +60,12 @@ split
 
 reset
 {
-	if (current.levelSelect == 0 && ((current.level % 11) + 1) < vars.split && settings["areaSplit"])
+	if (current.levelSelect != 108 && ((current.level % 11) + 1) < vars.split && settings["areaSplit"])
 	{
 		vars.split = 1;
 		return true;
 	}
-	else if (current.levelSelect == 0 && current.level < vars.split)
+	else if (current.levelSelect != 108 && current.level < vars.split)
 	{
 		vars.split = 1;
 		return true;

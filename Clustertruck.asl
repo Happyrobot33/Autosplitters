@@ -36,7 +36,7 @@ startup
 
 start
 {
-	if (current.levelSelect == 108 && (((current.level % 11) + 1) == 1 || settings["devMode"]))
+	if (current.levelSelect == 108 && (((current.level % 11) + 1) == 0 || settings["devMode"]))
 	{
 	        return true;
 	}

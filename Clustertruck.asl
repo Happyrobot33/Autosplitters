@@ -33,7 +33,7 @@ startup
 
 start
 {
-	if (current.levelSelect == 108)
+	if (current.levelSelect == 108 && ((current.level % 11) + 1) == 1)
 	{
 		return true;
 	}

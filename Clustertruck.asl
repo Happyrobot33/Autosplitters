@@ -13,7 +13,7 @@ init
 
 update
 {
-        If (settings["devMode"])
+        if (settings["devMode"])
         {
 	        print(current.level.ToString());
 	        print(((current.level % 11) + 1).ToString());

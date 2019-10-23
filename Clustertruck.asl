@@ -13,12 +13,12 @@ init
 
 update
 {
-        if (settings["devMode"])
-        {
-	        print(current.level.ToString());
-	        print(((current.level % 11) + 1).ToString());
-	        print(vars.split.ToString());
-	        print(current.levelSelect.ToString());
+	if (settings["devMode"])
+	{
+		print(current.level.ToString());
+		print(((current.level % 11) + 1).ToString());
+		print(vars.split.ToString());
+		print(current.levelSelect.ToString());
 	}
         return true;
 }

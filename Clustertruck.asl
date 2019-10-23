@@ -13,13 +13,14 @@ init
 
 update
 {
-	//print(current.level.ToString());
-	//print(((current.level % 11) + 1).ToString());
-	//print(vars.split.ToString());
-	//print(vars.split.ToString());
-	//print(current.levelSelect.ToString());
-	//print(((float)(current.level - 1) / 10).ToString());
-	return true;
+        If (settings["devmode"])
+        {
+	        print(current.level.ToString());
+	        print(((current.level % 11) + 1).ToString());
+	        print(vars.split.ToString());
+	        print(current.levelSelect.ToString());
+	}
+        return true;
 }
 
 startup
@@ -28,14 +29,16 @@ startup
 	settings.SetToolTip("levelSplit", "This will configure the autosplitter to split on every level instead of splitting for each area.");
 	settings.Add("areaSplit", false, "Single Area Splits");
 	settings.SetToolTip("areaSplit", "This will configure the autosplitter to split for only individual areas instead of the whole game.");
-    vars.split = 1;
+     	settings.Add("devMode", false, "Dev Mode");
+	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");   
+        vars.split = 1;
 }
 
 start
 {
-	if (current.levelSelect == 108 && ((current.level % 11) + 1) == 1)
+	if (current.levelSelect == 108 && (((current.level % 11) + 1) == 1 || settings["devMode"]))
 	{
-		return true;
+	        return true;
 	}
 	vars.split = 1;
 }

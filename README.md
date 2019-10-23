@@ -12,6 +12,6 @@ If this is on, then it will split for each level that you are on. when this is o
 #### Single Area Splits
 This allows you to have splits for just a single area instead of the whole game. This option takes precedence over the previous option, no matter if its on or off.
 #### Dev Mode
-Dont use this unless you know what you are doing. This dies disable some functionality.
+Dont use this unless you know what you are doing. This does disable some functionality.
 ## Bugs?
 If you find any bugs, please mark them [Here](https://github.com/Happyrobot33/Autosplitters/issues/new) so we can fix them. this is opensource, and if a feature you want isnt implemented, feel free to submit a change or mark it as an issue.

@@ -20,7 +20,14 @@ update
 		print(vars.split.ToString());
 		print(current.levelSelect.ToString());
 	}
-        return true;
+	print(current.levelSelect.ToString());
+	vars.areaLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
+	if (vars.areaLevel == 0)
+	{
+		vars.areaLevel = 10;
+	}
+	print(vars.areaLevel.ToString());
+	return true;
 }
 
 startup
@@ -36,7 +43,7 @@ startup
 
 start
 {
-	if (current.levelSelect == 108 && (((current.level % 11) + 1) == 0 || settings["devMode"]))
+	if (current.levelSelect == 108 && vars.areaLevel == 1)
 	{
 	        return true;
 	}
@@ -52,7 +59,7 @@ split
 		return true;
 	}
 	*/
-	if (((current.level % 11) + 1) > vars.split && settings["areaSplit"])
+	if (vars.areaLevel > vars.split && settings["areaSplit"])
 	{
 		vars.split += 1;
 		return true;
@@ -71,7 +78,7 @@ split
 
 reset
 {
-	if (current.levelSelect != 107 && ((current.level % 11) + 1) < vars.split && settings["areaSplit"])
+	if (vars.areaLevel < vars.split && settings["areaSplit"])
 	{
 		vars.split = 1;
 		return true;

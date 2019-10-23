@@ -3,7 +3,7 @@ state("Clustertruck")
 	//AutoSplitter Made by Happyrobot33
 	byte level : "mono.dll", 0x020B574, 0x10, 0x194, 0x0, 0x5C;
 	int levelSelect : "mono.dll", 0x01F30AC, 0x7D4, 0xC, 0x40, 0x90;
-	float Zcoord : "Clustertruck.exe", 0x0C54ECC, 0x634, 0x730, 0x2DC, 0x7B8, 0x35C;
+	//int bossButtonStatus : "mono.dll", 0x01AB068, 0x740, 0x164, 0x32C; // non zero when pressed
 }
 
 init
@@ -19,7 +19,6 @@ update
 	//print(vars.split.ToString());
 	//print(current.levelSelect.ToString());
 	//print(((float)(current.level - 1) / 10).ToString());
-	//print(current.Zcoord.ToString());
 	return true;
 }
 
@@ -43,12 +42,14 @@ start
 
 split
 {	
-	if (current.level == 90 && current.Zcoord >= 200)
+	/*
+	if (current.level == 90 && current.bossButtonStatus != 0)
 	{
 		vars.split += 1;
 		return true;
 	}
-	else if (((current.level % 11) + 1) > vars.split && settings["areaSplit"])
+	*/
+	if (((current.level % 11) + 1) > vars.split && settings["areaSplit"])
 	{
 		vars.split += 1;
 		return true;

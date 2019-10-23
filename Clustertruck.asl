@@ -19,7 +19,7 @@ update
 	//print(vars.split.ToString());
 	//print(current.levelSelect.ToString());
 	//print(((float)(current.level - 1) / 10).ToString());
-	print(current.Zcoord.ToString());
+	//print(current.Zcoord.ToString());
 	return true;
 }
 

@@ -29,9 +29,9 @@ startup
 	settings.SetToolTip("levelSplit", "This will configure the autosplitter to split on every level instead of splitting for each area.");
 	settings.Add("areaSplit", false, "Single Area Splits");
 	settings.SetToolTip("areaSplit", "This will configure the autosplitter to split for only individual areas instead of the whole game.");
-     	settings.Add("devMode", false, "Dev Mode");
+	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");   
-        vars.split = 1;
+	vars.split = 1;
 }
 
 start

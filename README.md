@@ -1,7 +1,5 @@
 # ClusterTruck
 This is an autosplitter for Clustertruck, fully integrated into livesplits XML database.
-## Warning!!
-at the moment, the autosplitter **DOES NOT** end the run for you when you beat the final boss. please keep this in mind during runs
 ## Usage
 To use, just go to Edit Splits, and click Activate. From now on, once you start a level, splits will begin automatically. 
 Be sure to check out your settings first though, as you need to change them depending on what kind of run you are doing

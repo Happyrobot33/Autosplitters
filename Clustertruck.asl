@@ -3,7 +3,7 @@ state("Clustertruck")
 	//AutoSplitter Made by Happyrobot33
 	int level : "mono.dll", 0x020B574, 0x10, 0x194, 0x0, 0x5C;
 	int levelSelect : "mono.dll", 0x01F30AC, 0x7D4, 0xC, 0x40, 0x90;
-	int bossButtonStatus : "mono.dll", 0x020B574, 0x10, 0x33C, 0x14; // 1 if boss beaten
+	int bossButtonStatus : "mono.dll", 0x01F52CC, 0x50, 0x33C, 0x14; // 1 if boss beaten
 }
 
 init

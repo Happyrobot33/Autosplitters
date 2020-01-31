@@ -7,7 +7,7 @@ Be sure to check out your settings first though, as you need to change them depe
 In the settings there are 2 options that determine how the autosplitter will behave.
 #### Full Game
 This is the default way to run the game from 1:1 to the end. leave this on if you are doing any official runs
-#### Single Area Splits
+#### Individual Worlds
 This will allow you to run individual worlds instead of the whole game (Does Overide any%)
 #### Dev Mode
 Dont use this unless you know what you are doing. This does disable some functionality.

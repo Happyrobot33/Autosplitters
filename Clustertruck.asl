@@ -1,7 +1,7 @@
 state("Clustertruck")
 {
 	//AutoSplitter Made by Happyrobot33
-	int level : "mono.dll", 0x020B574, 0x10, 0x194, 0x0, 0x5C; //what level we are on
+	int level : "mono.dll", 0x020B574, 0x10, 0x158, 0x54; //what level we are on
 	int levelSelect : "mono.dll", 0x01F30AC, 0x7D4, 0xC, 0x40, 0x90; //if we are in level select
 	float LevelTime : "mono.dll", 0x02048D0, 0x10, 0x110; //rta time
 	float FinishedLevelTime : "mono.dll", 0x020B574, 0x10, 0x130, 0x4, 0x90; // leaderboard time in level
@@ -16,10 +16,11 @@ update
 {
 	if (settings["devMode"])
 	{
-		print(current.level.ToString());
-		print(((current.level % 11) + 1).ToString());
-		print(vars.split.ToString());
-		print(current.levelSelect.ToString());
+		print("Current Level: " + current.level.ToString() + " Current Level In Area: " + ((current.level % 11) + 1).ToString() + " Current Split: " + vars.split.ToString() + " Level Select Variable: " + current.levelSelect.ToString());
+		//print(current.level.ToString());
+		//print(((current.level % 11) + 1).ToString());
+		//print(vars.split.ToString());
+		//print(current.levelSelect.ToString());
 	}
 	vars.areaLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
 	if (vars.areaLevel == 0)

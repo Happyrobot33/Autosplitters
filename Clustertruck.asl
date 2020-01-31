@@ -31,10 +31,10 @@ update
 
 startup
 {
-	settings.Add("levelSplit", true, "any%");
-	settings.SetToolTip("levelSplit", "This will configure the autosplitter to split on every level instead of splitting for each area.");
-	settings.Add("areaSplit", false, "Practice Mode");
-	settings.SetToolTip("areaSplit", "This will configure the autosplitter to split for only individual areas instead of the whole game. (Overides any%)");
+	settings.Add("levelSplit", true, "Full Game");
+	settings.SetToolTip("levelSplit", "This is the default way to run the game from 1:1 to the end");
+	settings.Add("areaSplit", false, "Individual Worlds");
+	settings.SetToolTip("areaSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
 	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");   
 	vars.split = 1;

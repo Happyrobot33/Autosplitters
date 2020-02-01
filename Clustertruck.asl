@@ -45,7 +45,7 @@ startup
 
 start
 {
-	if (current.levelSelect == 108 && vars.areaLevel == 1 && old.LevelTime == 0 && current.LevelTime <= 1 && current.LevelTime > 0)
+	if (current.levelSelect == 108 && vars.areaLevel == 1 && old.LevelTime == 0 && current.LevelTime > 0)
 	{
 	        return true;
 	}

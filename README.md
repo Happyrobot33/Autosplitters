@@ -1,5 +1,7 @@
 # ClusterTruck
 This is an autosplitter for Clustertruck, fully integrated into Livesplit’s XML database.
+## Warning
+Programs that affect Clustertruck’s memory will break the autosplitter. If the game was patched by the old autosplitter be sure to reverify the integrity of files or reinstall the game to remove the patch. Eye-tracking also has been known to cause issues too.
 ## Usage
 To use, just go to Edit Splits, and click Activate. From now on, once you start a level, splits will begin automatically. 
 Be sure to check out your settings first though, as you need to change them depending on what kind of run you are doing

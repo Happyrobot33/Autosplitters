@@ -82,12 +82,7 @@ split
 
 reset
 {
-	if (vars.areaLevel < vars.split && settings["areaSplit"])
-	{
-		vars.split = 1;
-		return true;
-	}
-	else if (current.levelSelect != 108 && current.level < vars.split)
+	if (old.level > current.level)
 	{
 		vars.split = 1;
 		return true;

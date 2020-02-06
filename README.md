@@ -5,7 +5,7 @@ Programs that affect Clustertruck’s memory will break the autosplitter. If the
 ## Usage
 To use, just go to Edit Splits, and click Activate. From now on, once you start the first level of a world, splits will begin automatically. 
 ## Settings
-In the settings, there are 2 options that determine how the autosplitter will behave.
+In the settings, there are a couple of options that determine how the autosplitter will behave.
 #### Full Game
 This is the default way to run the game from 1:1 to the end. Leave this on if you are doing any full game runs like any% or NoAbility.
 #### Dev Mode

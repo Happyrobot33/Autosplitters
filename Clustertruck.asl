@@ -4,7 +4,7 @@ state("Clustertruck")
 	int level : "mono.dll", 0x020B574, 0x10, 0x158, 0x54; //what level we are on
 	int inMenuValue : "mono.dll", 0x01F30AC, 0x7D4, 0xC, 0x40, 0x90; //if we are in level select
 	float levelTime : "mono.dll", 0x020B574, 0x10, 0x13C, 0x0, 0x28, 0x7F8; //IGT
-	float finishedlevelTime : "mono.dll", 0x020B574, 0x10, 0x130, 0x4, 0x90; // leaderboard time in level
+	float finishedLevelTime : "mono.dll", 0x020B574, 0x10, 0x130, 0x4, 0x90; // leaderboard time in level
 }
 
 init
@@ -16,61 +16,78 @@ init
 
 update
 {
-	if (settings["devMode"])
+	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length - 1, 1));
+	if (vars.worldLevel == 0)
 	{
-		print("Current Level: " + current.level.ToString() + "\n" + "Current Level In Area: " + ((current.level % 11) + 1).ToString() + "\n" + "Current Split: " + vars.split.ToString() + "\n" + "Level Select Variable: " + current.inMenuValue.ToString() + "\n" +  "Level Time: " + current.levelTime.ToString() + "\n" + "Leaderboard Time: " + current.finishedlevelTime.ToString());
-		//print(current.level.ToString());
-		//print(((current.level % 11) + 1).ToString());
-		//print(vars.split.ToString());
-		//print(current.inMenuValue.ToString());
+		vars.worldLevel = 10;
 	}
-	vars.areaLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
-	if (vars.areaLevel == 0)
+	
+	vars.inMenu = current.inMenuValue != 108;
+	
+	if (settings["devMode"]) // You can disable carriage returns in the options for the debug view to fix the debug being weird. You can also extend the debug print to show more and change the font.
 	{
-		vars.areaLevel = 10;
+		print("Current Level: " + current.level);
+		print("Current Level In World: " + vars.worldLevel);
+		print("Current Split: " + vars.split);
+		print("Are we in the menu?: " + vars.inMenu);
+		print("Level Time: " + current.levelTime);
+		print("Leaderboard Time: " + current.finishedLevelTime);
 	}
 	return true;
 }
 
 startup
 {
-	settings.Add("levelSplit", true, "Full Game");
-	settings.SetToolTip("levelSplit", "This is the default way to run the game from 1:1 to the end");
-	//settings.Add("areaSplit", false, "Individual Worlds");
-	//settings.SetToolTip("areaSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
+	settings.Add("levelSplit", true, "Split by Level");
+	settings.SetToolTip("levelSplit", "If true the autosplitter will split per level, otherwise it will split per 10 levels (world)");
+	
+	//settings.Add("worldSplit", false, "Individual Worlds");
+	//settings.SetToolTip("worldSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
+	
 	settings.Add("devMode", false, "Dev Mode");
-	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");   
+	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");
+	
 	vars.split = 1;
 }
 
 start
 {
-	if (current.inMenuValue == 108 && vars.areaLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
+	if (!vars.inMenu && vars.worldLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
 	{
-	        return true;
+		vars.lastLevel = current.level;
+	    return true;
 	}
 	vars.split = 1;
 }
 
 split
-{	
-	if (current.level == 90 && old.finishedlevelTime != current.finishedlevelTime && current.inMenuValue == 108) //make sure we are on the last level, make sure the leaderboard time updated, and make sure we are in the level
+{
+	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too quickly so we have to manually update what the last level was
+	if (current.level == 90 && old.finishedlevelTime != current.finishedlevelTime && !vars.inMenu) // Makes sure we are on the last level, the leaderboard time has been updated, and in the final level
 	{
 		vars.split += 1;
-		print("1 split");
+		print("9:10 split");
 		return true;
 	}
-	else if (old.level < current.level)
+	else if (vars.newLevelStart && settings["levelSplit"]) // Split by level
 	{
 		vars.split += 1;
-		print("2 split");
+		vars.lastLevel = current.level;
+		print("Level split");
+		return true;
+	}
+	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) // Split by world
+	{
+		vars.split += 1;
+		vars.lastLevel = current.level;
+		print("World split");
 		return true;
 	}
 }
 
 reset
 {
-	if (old.level > current.level)
+	if (old.level > current.level) // Restarts if user goes back a level
 	{
 		vars.split = 1;
 		return true;
@@ -83,7 +100,7 @@ isLoading
 	if(current.levelTime > 0 && !vars.finishedLevel){
 		vars.loading = false;
 	}
-	if(old.finishedlevelTime != current.finishedlevelTime){
+	if(old.finishedLevelTime != current.finishedLevelTime){
 		vars.loading = true;
 		vars.finishedLevel = true;
 	}

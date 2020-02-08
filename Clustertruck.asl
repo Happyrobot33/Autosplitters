@@ -17,6 +17,11 @@ init
 update
 {
 	vars.inMenu = current.inMenuValue != 108;
+	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
+	if (vars.worldLevel == 0)
+	{
+		vars.worldLevel = 10;
+	}
 	if (settings["devMode"]) // You can disable carriage returns in the options for the debug view to fix the debug being weird. You can also extend the debug print to show more and change the font.
 	{
 		print("Current Level: " + current.level);
@@ -25,11 +30,6 @@ update
 		print("Are we in the menu?: " + vars.inMenu);
 		print("Level Time: " + current.levelTime);
 		print("Leaderboard Time: " + current.finishedLevelTime);
-	}
-	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
-	if (vars.worldLevel == 0)
-	{
-		vars.worldLevel = 10;
 	}
 	return true;
 }
@@ -64,13 +64,20 @@ split
 		print("1 split");
 		return true;
 	}
-	else if (vars.newLevelStart)
+	else if (vars.newLevelStart && settings["levelSplit"])
 	{
 		vars.split += 1;
 		vars.lastLevel = current.level;
 		print("2 split");
 		return true;
 	}
+	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) // Split by world
+    {
+        vars.split += 1;
+        vars.lastLevel = current.level;
+        print("World split");
+        return true;
+    }
 }
 
 reset

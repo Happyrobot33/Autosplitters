@@ -16,14 +16,7 @@ init
 
 update
 {
-	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length - 1, 1));
-	if (vars.worldLevel == 0)
-	{
-		vars.worldLevel = 10;
-	}
-	
 	vars.inMenu = current.inMenuValue != 108;
-	
 	if (settings["devMode"]) // You can disable carriage returns in the options for the debug view to fix the debug being weird. You can also extend the debug print to show more and change the font.
 	{
 		print("Current Level: " + current.level);
@@ -33,20 +26,22 @@ update
 		print("Level Time: " + current.levelTime);
 		print("Leaderboard Time: " + current.finishedLevelTime);
 	}
+	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
+	if (vars.worldLevel == 0)
+	{
+		vars.worldLevel = 10;
+	}
 	return true;
 }
 
 startup
 {
-	settings.Add("levelSplit", true, "Split by Level");
-	settings.SetToolTip("levelSplit", "If true the autosplitter will split per level, otherwise it will split per 10 levels (world)");
-	
+	settings.Add("levelSplit", true, "Full Game");
+	settings.SetToolTip("levelSplit", "This is the default way to run the game from 1:1 to the end");
 	//settings.Add("worldSplit", false, "Individual Worlds");
 	//settings.SetToolTip("worldSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
-	
 	settings.Add("devMode", false, "Dev Mode");
-	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");
-	
+	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");   
 	vars.split = 1;
 }
 
@@ -61,33 +56,26 @@ start
 }
 
 split
-{
-	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too quickly so we have to manually update what the last level was
-	if (current.level == 90 && old.finishedlevelTime != current.finishedlevelTime && !vars.inMenu) // Makes sure we are on the last level, the leaderboard time has been updated, and in the final level
+{	
+	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms
+	if (current.level == 90 && old.finishedLevelTime != current.finishedLevelTime && current.inMenuValue == 108) //make sure we are on the last level, make sure the leaderboard time updated, and make sure we are in the level
 	{
 		vars.split += 1;
-		print("9:10 split");
+		print("1 split");
 		return true;
 	}
-	else if (vars.newLevelStart && settings["levelSplit"]) // Split by level
+	else if (vars.newLevelStart)
 	{
 		vars.split += 1;
 		vars.lastLevel = current.level;
-		print("Level split");
-		return true;
-	}
-	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) // Split by world
-	{
-		vars.split += 1;
-		vars.lastLevel = current.level;
-		print("World split");
+		print("2 split");
 		return true;
 	}
 }
 
 reset
 {
-	if (old.level > current.level) // Restarts if user goes back a level
+	if (old.level > current.level)
 	{
 		vars.split = 1;
 		return true;

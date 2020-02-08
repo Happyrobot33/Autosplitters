@@ -36,10 +36,8 @@ update
 
 startup
 {
-	settings.Add("levelSplit", true, "Full Game");
-	settings.SetToolTip("levelSplit", "This is the default way to run the game from 1:1 to the end");
-	//settings.Add("worldSplit", false, "Individual Worlds");
-	//settings.SetToolTip("worldSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
+	settings.Add("levelSplit", true, "Split by Level");
+	settings.SetToolTip("levelSplit", "If true, the autosplitter will split per level. Otherwise it will split per 10 levels (world)");
 	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");   
 	vars.split = 1;
@@ -61,23 +59,23 @@ split
 	if (current.level == 90 && old.finishedLevelTime != current.finishedLevelTime && current.inMenuValue == 108) //make sure we are on the last level, make sure the leaderboard time updated, and make sure we are in the level
 	{
 		vars.split += 1;
-		print("1 split");
+		print("9:10 split");
 		return true;
 	}
 	else if (vars.newLevelStart && settings["levelSplit"])
 	{
 		vars.split += 1;
 		vars.lastLevel = current.level;
-		print("2 split");
+		print("Level split");
 		return true;
 	}
 	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) // Split by world
-    {
-        vars.split += 1;
-        vars.lastLevel = current.level;
-        print("World split");
-        return true;
-    }
+    	{
+        	vars.split += 1;
+        	vars.lastLevel = current.level;
+        	print("World split");
+        	return true;
+    	}
 }
 
 reset

@@ -5,6 +5,7 @@ state("Clustertruck")
 	int inMenuValue : "mono.dll", 0x01F30AC, 0x7D4, 0xC, 0x40, 0x90; //if we are in level select
 	float levelTime : "mono.dll", 0x020B574, 0x10, 0x13C, 0x0, 0x28, 0x7F8; //IGT
 	float finishedLevelTime : "mono.dll", 0x020B574, 0x10, 0x130, 0x4, 0x90; // leaderboard time in level
+	int inDeathScreen : "Clustertruck.exe", 0x0F4CAB0, 0x0, 0x4, 0xAC, 0xB4, 0x654; //Death info. goes from 0 to 144 when in death screen
 }
 
 init
@@ -12,10 +13,20 @@ init
 	vars.split = 1;
 	vars.loading = false;
 	vars.finishedLevel = false;
+	vars.deaths = 0;
+	vars.deathCounted = false;
 }
 
 update
 {
+	vars.isDead = current.inDeathScreen != 0;
+	if(vars.isDead && !vars.deathCounted && !vars.inMenu){
+		vars.deathCounted = true;
+		vars.deaths++;
+	}
+	else if(!vars.isDead){
+		vars.deathCounted = false;
+	}
 	vars.inMenu = current.inMenuValue != 108;
 	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
 	if (vars.worldLevel == 0)
@@ -30,14 +41,18 @@ update
 		print("Are we in the menu?: " + vars.inMenu);
 		print("Level Time: " + current.levelTime);
 		print("Leaderboard Time: " + current.finishedLevelTime);
+		print("Dead: " + vars.isDead);
+		print("Deaths: " + vars.deaths);
 	}
 	return true;
 }
 
 startup
 {
-	settings.Add("levelSplit", true, "Split by Level");
-	settings.SetToolTip("levelSplit", "If true, the autosplitter will split per level. Otherwise it will split per 10 levels (world)");
+	settings.Add("levelSplit", true, "Full Game");
+	settings.SetToolTip("levelSplit", "This is the default way to run the game from 1:1 to the end");
+	//settings.Add("worldSplit", false, "Individual Worlds");
+	//settings.SetToolTip("worldSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
 	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");   
 	vars.split = 1;
@@ -45,6 +60,7 @@ startup
 
 start
 {
+	vars.deaths = 0;
 	if (!vars.inMenu && vars.worldLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
 	{
 		vars.lastLevel = current.level;
@@ -59,23 +75,23 @@ split
 	if (current.level == 90 && old.finishedLevelTime != current.finishedLevelTime && current.inMenuValue == 108) //make sure we are on the last level, make sure the leaderboard time updated, and make sure we are in the level
 	{
 		vars.split += 1;
-		print("9:10 split");
+		print("1 split");
 		return true;
 	}
 	else if (vars.newLevelStart && settings["levelSplit"])
 	{
 		vars.split += 1;
 		vars.lastLevel = current.level;
-		print("Level split");
+		print("2 split");
 		return true;
 	}
 	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) // Split by world
-    	{
-        	vars.split += 1;
-        	vars.lastLevel = current.level;
-        	print("World split");
-        	return true;
-    	}
+    {
+        vars.split += 1;
+        vars.lastLevel = current.level;
+        print("World split");
+        return true;
+    }
 }
 
 reset

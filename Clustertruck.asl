@@ -20,6 +20,7 @@ init
 update
 {
 	vars.isDead = current.inDeathScreen != 0;
+	vars.inMenu = current.inMenuValue != 108;
 	if(vars.isDead && !vars.deathCounted && !vars.inMenu){
 		vars.deathCounted = true;
 		vars.deaths++;
@@ -27,7 +28,6 @@ update
 	else if(!vars.isDead){
 		vars.deathCounted = false;
 	}
-	vars.inMenu = current.inMenuValue != 108;
 	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
 	if (vars.worldLevel == 0)
 	{

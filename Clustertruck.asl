@@ -3,7 +3,8 @@ state("Clustertruck")
 	//AutoSplitter Made by Happyrobot33
 	int level : "mono.dll", 0x020B574, 0x10, 0x158, 0x54; //what level we are on
 	int inMenuValue : "mono.dll", 0x01F30AC, 0x7D4, 0xC, 0x40, 0x90; //if we are in level select
-	float levelTime : "mono.dll", 0x020B574, 0x10, 0x13C, 0x0, 0x28, 0x7F8; //IGT
+	//float levelTime : "mono.dll", 0x020B574, 0x10, 0x13C, 0x0, 0x28, 0x7F8; //IGT (Backup as new address might not be full fix)
+	float levelTime : "Clustertruck.exe", 0x00F6B420, 0x20, 0x1C, 0x48, 0x30, 0x14, 0x0, 0x38; //new HOTFIX for some users, might need better solution
 	float finishedLevelTime : "mono.dll", 0x020B574, 0x10, 0x130, 0x4, 0x90; // leaderboard time in level
 	int inDeathScreen : "Clustertruck.exe", 0x0F4CAB0, 0x0, 0x4, 0xAC, 0xB4, 0x654; //Death info. goes from 0 to 144 when in death screen
 }

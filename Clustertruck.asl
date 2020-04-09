@@ -50,8 +50,8 @@ update
 
 startup
 {
-	settings.Add("levelSplit", true, "Full Game");
-	settings.SetToolTip("levelSplit", "This is the default way to run the game from 1:1 to the end");
+	settings.Add("levelSplit", true, "Split by Level");
+	settings.SetToolTip("levelSplit", "True splits per level, false splits per world.");
 	//settings.Add("worldSplit", false, "Individual Worlds");
 	//settings.SetToolTip("worldSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
 	settings.Add("devMode", false, "Dev Mode");

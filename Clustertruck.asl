@@ -95,24 +95,15 @@ split
 	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms out of sync
 	
 	//if the current level is the boss, then only split if the leaderboard time has changed from level load
-	if (current.level == 90 && old.finishedLevelTime != current.finishedLevelTime && current.inMenuValue == 108)
+	if (old.finishedLevelTime != current.finishedLevelTime && settings["levelSplit"])
 	{
 		vars.split += 1;
-		print("1 split");
 		return true;
 	}
-	else if (vars.newLevelStart && settings["levelSplit"]) //split if we have entered a new level
-	{
-		vars.split += 1;
-		vars.lastLevel = current.level;
-		print("2 split");
-		return true;
-	}
-	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) //split if we load a new world and are on the corresponding setting
+	else if (old.finishedLevelTime != current.finishedLevelTime && vars.worldLevel == 10 && !settings["levelSplit"]) //split if we load a new world and are on the corresponding setting
     {
         vars.split += 1;
         vars.lastLevel = current.level;
-        print("World split");
         return true;
     }
 }

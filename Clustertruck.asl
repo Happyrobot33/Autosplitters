@@ -17,6 +17,8 @@ init
 	vars.loading = false; //determine if we are currently loading or not. this helps with IGT which is not fully completed yet
 	vars.finishedLevel = false; //determine if we completed a level. Helps with IGT which is not fully completed
 	vars.deaths = 0; //reset the death count. Currently not fully functional
+	vars.afterDeath = false;
+	vars.afterDeathTimer = 0;
 	vars.deathCounted = false; //determine if we have already counted a death. does work
 	vars.newLevelStart = false; //determine if a new level was started
 }
@@ -26,9 +28,19 @@ update
 {
 	vars.isDead = current.inDeathScreen != 0; //determine if the player is dead in the current tick
 	vars.inMenu = current.inMenuValue != 108 && current.inMenuValue != 109; //determine if the player is in the menu in the current tick
+
+	if (vars.afterDeath) {
+		vars.afterDeathTimer++;
+	}
+
+	if (vars.afterDeathTimer == 200) {
+		vars.afterDeath = false;
+		vars.afterDeathTimer = 0;
+	}
 	
 	//death counter logic.
 	if(vars.isDead && !vars.deathCounted && !vars.inMenu){
+		vars.afterDeath = true;
 		vars.deathCounted = true; //block re execution of this logic
 		vars.deaths++; //add one to deaths
 	}
@@ -71,13 +83,19 @@ startup
 	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");
 	settings.Add("beta", false, "Beta Features");
-	settings.SetToolTip("beta", "This is only used for beta testers to test features that aren't fully working or fully tested");   
+	settings.SetToolTip("beta", "This is only used for beta testers to test features that aren't fully working or fully tested");
+	settings.Add("noRestartAfterDeath", true, "Don't restart after death");
+	settings.SetToolTip("noRestartAfterDeath", "Don't restart after pressing reset in a death screen on a starting level.");
 	vars.split = 1;
 }
 
 //triggers at the start of every new run
 start
 {
+	if (settings["noRestartAfterDeath"] && vars.afterDeath) {
+		return false;
+	}
+
 	vars.deaths = 0; //reset deaths
 
 	//if we are in the first level of a world and the level time has begun, start the timer

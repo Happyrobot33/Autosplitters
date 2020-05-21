@@ -1,3 +1,4 @@
+//defines pointers to be pulling variables from
 state("Clustertruck")
 {
 	//AutoSplitter Made by Happyrobot33
@@ -9,50 +10,62 @@ state("Clustertruck")
 	int inDeathScreen : "Clustertruck.exe", 0x0F4CAB0, 0x0, 0x4, 0xAC, 0xB4, 0x654; //Death info. goes from 0 to 144 when in death screen
 }
 
+//triggers upon the game being found
 init
 {
-	vars.split = 1;
-	vars.loading = false;
-	vars.finishedLevel = false;
-	vars.deaths = 0;
-	vars.deathCounted = false;
-	vars.newLevelStart = false;
+	vars.split = 1; //set our current split to the first split. this variable is only used internally to determine where we are, although this should be correct under normal conditions
+	vars.loading = false; //determine if we are currently loading or not. this helps with IGT which is not fully completed yet
+	vars.finishedLevel = false; //determine if we completed a level. Helps with IGT which is not fully completed
+	vars.deaths = 0; //reset the death count. Currently not fully functional
+	vars.deathCounted = false; //determine if we have already counted a death. does work
+	vars.newLevelStart = false; //determine if a new level was started
 }
 
+//triggers every livesplit tick
 update
 {
-	vars.isDead = current.inDeathScreen != 0;
-	vars.inMenu = current.inMenuValue != 108;
+	vars.isDead = current.inDeathScreen != 0; //determine if the player is dead in the current tick
+	vars.inMenu = current.inMenuValue != 108 && current.inMenuValue != 109; //determine if the player is in the menu in the current tick
+	
+	//death counter logic.
 	if(vars.isDead && !vars.deathCounted && !vars.inMenu){
-		vars.deathCounted = true;
-		vars.deaths++;
+		vars.deathCounted = true; //block re execution of this logic
+		vars.deaths++; //add one to deaths
 	}
 	else if(!vars.isDead){
-		vars.deathCounted = false;
+		vars.deathCounted = false; //unlock execution if alive again
 	}
-	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1));
+
+	vars.worldLevel = Convert.ToInt32(current.level.ToString().Substring(current.level.ToString().Length-1, 1)); //determine what level in a world you are currently in IE 5:4 would make this 4
+	
+	//if we are on Desert, the above code doesnt get the right value, so this overides the value to what we need
 	if (vars.worldLevel == 0)
 	{
 		vars.worldLevel = 10;
 	}
+	
+	//print a bunch of debug info
 	if (settings["devMode"]) // You can disable carriage returns in the options for the debug view to fix the debug being weird. You can also extend the debug print to show more and change the font.
 	{
 		print("Current Level: " + current.level);
 		print("Current Level In World: " + vars.worldLevel);
 		print("Current Split: " + vars.split);
 		print("Are we in the menu?: " + vars.inMenu);
+		print("Are we in the menu value?: " + current.inMenuValue);
 		print("Level Time: " + current.levelTime);
 		print("Leaderboard Time: " + current.finishedLevelTime);
 		print("Dead: " + vars.isDead);
 		print("Deaths: " + vars.deaths);
 	}
-	return true;
+
+	return true; //return true to allow the script to continue
 }
 
+//triggers when the script first loads
 startup
 {
-	settings.Add("levelSplit", true, "Full Game");
-	settings.SetToolTip("levelSplit", "This is the default way to run the game from 1:1 to the end");
+	settings.Add("levelSplit", true, "Split by Level");
+	settings.SetToolTip("levelSplit", "True splits per level, false splits per world.");
 	//settings.Add("worldSplit", false, "Individual Worlds");
 	//settings.SetToolTip("worldSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
 	settings.Add("devMode", false, "Dev Mode");
@@ -62,34 +75,40 @@ startup
 	vars.split = 1;
 }
 
+//triggers at the start of every new run
 start
 {
-	vars.deaths = 0;
+	vars.deaths = 0; //reset deaths
+
+	//if we are in the first level of a world and the level time has begun, start the timer
 	if (!vars.inMenu && vars.worldLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
 	{
-		vars.lastLevel = current.level;
+		vars.lastLevel = current.level; //reset what the last level was. used for splitting
 	    return true;
 	}
-	vars.split = 1;
+	vars.split = 1; //reset splits
 }
 
+//determines when to split. runs every livesplit tick
 split
 {	
-	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms
-	if (current.level == 90 && old.finishedLevelTime != current.finishedLevelTime && current.inMenuValue == 108) //make sure we are on the last level, make sure the leaderboard time updated, and make sure we are in the level
+	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms out of sync
+	
+	//if the current level is the boss, then only split if the leaderboard time has changed from level load
+	if (current.level == 90 && old.finishedLevelTime != current.finishedLevelTime && current.inMenuValue == 108)
 	{
 		vars.split += 1;
 		print("1 split");
 		return true;
 	}
-	else if (vars.newLevelStart && settings["levelSplit"])
+	else if (vars.newLevelStart && settings["levelSplit"]) //split if we have entered a new level
 	{
 		vars.split += 1;
 		vars.lastLevel = current.level;
 		print("2 split");
 		return true;
 	}
-	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) // Split by world
+	else if (vars.newLevelStart && vars.worldLevel == 1 && !settings["levelSplit"]) //split if we load a new world and are on the corresponding setting
     {
         vars.split += 1;
         vars.lastLevel = current.level;
@@ -98,8 +117,10 @@ split
     }
 }
 
+//determine when to reset the timer
 reset
 {
+	//if the previous ticks level is ahead of the current one, reset
 	if (old.level > current.level)
 	{
 		vars.split = 1;
@@ -107,12 +128,13 @@ reset
 	}
 }
 
+//pause timer when game is loading
 isLoading
 {
 	//this code is garbage but works. keep in mind its not very accurate
 	if(settings["beta"]){ //setup to allow beta testing without people complaining or using untested features
 		//this resets the is loading toggle flag
-		//if(old.level != current.level && current.levelTime > 0){
+		vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0);
 		if(vars.newLevelStart || vars.inMenu){
 			vars.finishedLevel = false;
 			return false;

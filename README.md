@@ -1,3 +1,9 @@
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Happyrobot33/Autosplitters?style=for-the-badge)
+![GitHub contributors](https://img.shields.io/github/contributors/Happyrobot33/Autosplitters?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/Happyrobot33/Autosplitters?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues-raw/Happyrobot33/Autosplitters?style=for-the-badge)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Happyrobot33/Autosplitters?style=for-the-badge)
+---
 # ClusterTruck
 This is an autosplitter for Clustertruck, fully integrated into Livesplit’s XML database.
 ## Warning

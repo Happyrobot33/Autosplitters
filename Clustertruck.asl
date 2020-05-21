@@ -17,8 +17,8 @@ init
 	vars.loading = false; //determine if we are currently loading or not. this helps with IGT which is not fully completed yet
 	vars.finishedLevel = false; //determine if we completed a level. Helps with IGT which is not fully completed
 	vars.deaths = 0; //reset the death count. Currently not fully functional
-	vars.afterDeath = false;
-	vars.afterDeathTimer = 0;
+	vars.afterDeath = false; //determine if the player just came out of a death screen
+	vars.afterDeathTimer = 0; //timer for the above variable. At 200 it resets afterDeath to false and the timer back to 0
 	vars.deathCounted = false; //determine if we have already counted a death. does work
 	vars.newLevelStart = false; //determine if a new level was started
 }
@@ -29,12 +29,12 @@ update
 	vars.isDead = current.inDeathScreen != 0; //determine if the player is dead in the current tick
 	vars.inMenu = current.inMenuValue != 108 && current.inMenuValue != 109; //determine if the player is in the menu in the current tick
 
-	if (vars.afterDeath) 
+	if (vars.afterDeath) //add 1 to the timer if afterDeath is still true
 	{
 		vars.afterDeathTimer++;
 	}
 
-	if (vars.afterDeathTimer == 200) 
+	if (vars.afterDeathTimer == 200) //reset the timer and afterDeath after 200 update cycles
 	{
 		vars.afterDeath = false;
 		vars.afterDeathTimer = 0;
@@ -43,7 +43,7 @@ update
 	//death counter logic.
 	if(vars.isDead && !vars.deathCounted && !vars.inMenu)
 	{
-		vars.afterDeath = true;
+		vars.afterDeath = true; //start the afterDeath sequence
 		vars.deathCounted = true; //block re execution of this logic
 		vars.deaths++; //add one to deaths
 	}
@@ -96,7 +96,7 @@ startup
 //triggers at the start of every new run
 start
 {
-	if (settings["noRestartAfterDeath"] && vars.afterDeath)
+	if (settings["noRestartAfterDeath"] && vars.afterDeath) //if the afterDeath setting is enabled and the player is currently in after death state, don't start the timer
 	{
 		return false;
 	}

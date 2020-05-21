@@ -29,22 +29,26 @@ update
 	vars.isDead = current.inDeathScreen != 0; //determine if the player is dead in the current tick
 	vars.inMenu = current.inMenuValue != 108 && current.inMenuValue != 109; //determine if the player is in the menu in the current tick
 
-	if (vars.afterDeath) {
+	if (vars.afterDeath) 
+	{
 		vars.afterDeathTimer++;
 	}
 
-	if (vars.afterDeathTimer == 200) {
+	if (vars.afterDeathTimer == 200) 
+	{
 		vars.afterDeath = false;
 		vars.afterDeathTimer = 0;
 	}
 	
 	//death counter logic.
-	if(vars.isDead && !vars.deathCounted && !vars.inMenu){
+	if(vars.isDead && !vars.deathCounted && !vars.inMenu)
+	{
 		vars.afterDeath = true;
 		vars.deathCounted = true; //block re execution of this logic
 		vars.deaths++; //add one to deaths
 	}
-	else if(!vars.isDead){
+	else if(!vars.isDead)
+	{
 		vars.deathCounted = false; //unlock execution if alive again
 	}
 
@@ -92,7 +96,8 @@ startup
 //triggers at the start of every new run
 start
 {
-	if (settings["noRestartAfterDeath"] && vars.afterDeath) {
+	if (settings["noRestartAfterDeath"] && vars.afterDeath)
+	{
 		return false;
 	}
 

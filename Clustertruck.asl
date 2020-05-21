@@ -28,11 +28,13 @@ update
 	vars.inMenu = current.inMenuValue != 108 && current.inMenuValue != 109; //determine if the player is in the menu in the current tick
 	
 	//death counter logic.
-	if(vars.isDead && !vars.deathCounted && !vars.inMenu){
+	if(vars.isDead && !vars.deathCounted && !vars.inMenu)
+	{
 		vars.deathCounted = true; //block re execution of this logic
 		vars.deaths++; //add one to deaths
 	}
-	else if(!vars.isDead){
+	else if(!vars.isDead)
+	{
 		vars.deathCounted = false; //unlock execution if alive again
 	}
 
@@ -66,8 +68,8 @@ startup
 {
 	settings.Add("levelSplit", true, "Split by Level");
 	settings.SetToolTip("levelSplit", "True splits per level, false splits per world.");
-	//settings.Add("worldSplit", false, "Individual Worlds");
-	//settings.SetToolTip("worldSplit", "This will allow you to run individual worlds instead of the whole game (Overides any%)");
+	settings.Add("startInLevel", true, "Start in Level");
+	settings.SetToolTip("startInLevel", "True allows the autosplitter to start when you are on the first level, false disables this");
 	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");
 	settings.Add("beta", false, "Beta Features");
@@ -79,10 +81,16 @@ startup
 start
 {
 	vars.deaths = 0; //reset deaths
-
+	
+	if(vars.inMenu)
+		vars.wasInMenu = vars.inMenu; // wasInMenu basically is just old.inMenu. It just tells us if we were just in the mnu
+	
+	// If we were in the menu and we don't want to start in levels start OR if we want to start in levels and we are in game start
+	vars.inLevel = ((vars.wasInMenu && !settings["startInLevel"])||settings["startInLevel"]); 
 	//if we are in the first level of a world and the level time has begun, start the timer
-	if (!vars.inMenu && vars.worldLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
+	if (vars.inLevel && !vars.inMenu && vars.worldLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
 	{
+		vars.wasInMenu = false;
 		vars.lastLevel = current.level; //reset what the last level was. used for splitting
 	    return true;
 	}
@@ -91,21 +99,21 @@ start
 
 //determines when to split. runs every livesplit tick
 split
-{	
-	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms out of sync
-	
-	//if the leaderboard time updates and we are in the levelSplit setting then split
-	if (old.finishedLevelTime != current.finishedLevelTime && settings["levelSplit"])
+{
+	if(old.finishedLevelTime != current.finishedLevelTime)
 	{
-		vars.split += 1;
-		return true;
+		if (settings["levelSplit"]) //if the leaderboard time updates and we are in the levelSplit setting then split
+		{
+			vars.split += 1;
+			return true;
+		}
+		else if (vars.worldLevel == 10 && !settings["levelSplit"]) //split if we load a new world and are on the corresponding setting
+		{
+			vars.split += 1;
+			vars.lastLevel = current.level;
+			return true;
+		}
 	}
-	else if (old.finishedLevelTime != current.finishedLevelTime && vars.worldLevel == 10 && !settings["levelSplit"]) //split if we load a new world and are on the corresponding setting
-    {
-        vars.split += 1;
-        vars.lastLevel = current.level;
-        return true;
-    }
 }
 
 //determine when to reset the timer
@@ -125,7 +133,7 @@ isLoading
 	//this code is garbage but works. keep in mind its not very accurate
 	if(settings["beta"]){ //setup to allow beta testing without people complaining or using untested features
 		//this resets the is loading toggle flag
-		vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0);
+		vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms out of sync
 		if(vars.newLevelStart || vars.inMenu)
 		{
 			vars.finishedLevel = false;

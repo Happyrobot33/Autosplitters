@@ -20,4 +20,4 @@ Don’t use this unless you know what you are doing. This does disable some func
 #### Reset
 The autosplitter will reset when you go back a level. However, it does not reset when you go back to the level selection screen. Makes resetting your runs much easier.
 ## Bugs?
-If you find any bugs, please mark them [here](https://github.com/Happyrobot33/Autosplitters/issues/new) so we can fix them. This is opensource, and if a feature you want isn’t implemented, feel free to submit a change or mark it as an issue.
+If you find any bugs, please mark them [here](https://github.com/Happyrobot33/Autosplitters/issues/new/choose) so we can fix them. This is opensource, and if a feature you want isn’t implemented, feel free to submit a change or mark it as an issue.

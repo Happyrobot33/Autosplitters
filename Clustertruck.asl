@@ -29,9 +29,6 @@ update
 	vars.isDead = current.inDeathScreen != 0; //determine if the player is dead in the current tick
 	vars.inMenu = current.inMenuValue != 108 && current.inMenuValue != 109; //determine if the player is in the menu in the current tick
 
-	print("timer: " + vars.afterDeathTimer);
-	print("afterDeath: " + vars.afterDeath);
-
 	if (vars.afterDeath && current.inDeathScreen != 144) //add 1 to the timer if the player exited the death screen
 	{
 		vars.afterDeathTimer++;

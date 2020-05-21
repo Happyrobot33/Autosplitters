@@ -15,8 +15,15 @@ init
 	vars.loading = false;
 	vars.finishedLevel = false;
 	vars.deaths = 0;
+	vars.afterDeath = false;
 	vars.deathCounted = false;
 	vars.newLevelStart = false;
+	
+	public static async Task deathAsync() {
+		vars.afterDeath = true;
+		await Task.Delay(200);
+		vars.afterDeath = false;
+	}
 }
 
 update
@@ -24,6 +31,7 @@ update
 	vars.isDead = current.inDeathScreen != 0;
 	vars.inMenu = current.inMenuValue != 108;
 	if(vars.isDead && !vars.deathCounted && !vars.inMenu){
+		deathAsync();
 		vars.deathCounted = true;
 		vars.deaths++;
 	}
@@ -59,16 +67,20 @@ startup
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");
 	settings.Add("beta", false, "Beta Features");
 	settings.SetToolTip("beta", "This is only used for beta testers to test features that aren't fully working or fully tested");   
+	settings.Add("ignoreDeath", false, "Ignore start after death");
 	vars.split = 1;
 }
 
 start
 {
+	if (settings.ignoreDeath && vars.afterDeath) { 
+		return false;
+	}
 	vars.deaths = 0;
 	if (!vars.inMenu && vars.worldLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
 	{
 		vars.lastLevel = current.level;
-	    return true;
+		return true;
 	}
 	vars.split = 1;
 }

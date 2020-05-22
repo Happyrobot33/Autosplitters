@@ -68,8 +68,8 @@ startup
 {
 	settings.Add("levelSplit", true, "Split by Level");
 	settings.SetToolTip("levelSplit", "True splits per level, false splits per world.");
-	settings.Add("startInLevel", true, "Start in Level");
-	settings.SetToolTip("startInLevel", "True allows the autosplitter to start when you are on the first level, false disables this");
+	settings.Add("onlyStartFromLoad", false, "Only Start from Level Load");
+	settings.SetToolTip("onlyStartFromLoad", "True makes it so the timer only starts when loading a level from the level select screen");
 	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");
 	settings.Add("beta", false, "Beta Features");
@@ -86,7 +86,7 @@ start
 		vars.wasInMenu = vars.inMenu; // wasInMenu basically is just old.inMenu. It just tells us if we were just in the mnu
 	
 	// If we were in the menu and we don't want to start in levels start OR if we want to start in levels and we are in game start
-	vars.inLevel = ((vars.wasInMenu && !settings["startInLevel"])||settings["startInLevel"]); 
+	vars.inLevel = ((vars.wasInMenu && settings["onlyStartFromLoad"]) || !settings["onlyStartFromLoad"]); 
 	//if we are in the first level of a world and the level time has begun, start the timer
 	if (vars.inLevel && !vars.inMenu && vars.worldLevel == 1 && old.levelTime == 0 && current.levelTime > 0)
 	{

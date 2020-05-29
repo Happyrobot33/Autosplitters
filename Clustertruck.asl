@@ -72,8 +72,6 @@ startup
 	settings.SetToolTip("onlyStartFromLoad", "True makes it so the timer only starts when loading a level from the level select screen");
 	settings.Add("devMode", false, "Dev Mode");
 	settings.SetToolTip("devMode", "This enables dev mode, allowing for debugging. Leave false if you dont know what you are doing");
-	settings.Add("beta", false, "Beta Features");
-	settings.SetToolTip("beta", "This is only used for beta testers to test features that aren't fully working or fully tested");   
 	vars.split = 1;
 }
 
@@ -131,27 +129,25 @@ reset
 isLoading
 {
 	//this code is garbage but works. keep in mind its not very accurate
-	if(settings["beta"]){ //setup to allow beta testing without people complaining or using untested features
-		//this resets the is loading toggle flag
-		vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms out of sync
-		if(vars.newLevelStart || vars.inMenu)
-		{
-			vars.finishedLevel = false;
-			return false;
-		}
+	//this resets the is loading toggle flag
+	vars.newLevelStart = (vars.lastLevel != current.level && old.levelTime == 0 && current.levelTime > 0); // old.level does work alone, but in this scenario it updates too early so we have to manually update what the last level was in order for us to not be 300ms out of sync
+	if(vars.newLevelStart || vars.inMenu)
+	{
+		vars.finishedLevel = false;
+		return false;
+	}
 
-		//this determines when to start returning true. this is only active for 1 tick
-		if(old.finishedLevelTime != current.finishedLevelTime)
-		{
-			vars.loading = true;
-			return true;
-			vars.finishedLevel = true;
-		}
+	//this determines when to start returning true. this is only active for 1 tick
+	if(old.finishedLevelTime != current.finishedLevelTime)
+	{
+		vars.loading = true;
+		return true;
+		vars.finishedLevel = true;
+	}
 
-		//this keeps isLoading active after the initial check above
-		if(vars.finishedLevel)
-		{
-			return true;
-		}
+	//this keeps isLoading active after the initial check above
+	if(vars.finishedLevel)
+	{
+		return true;
 	}
 }

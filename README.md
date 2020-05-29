@@ -15,7 +15,7 @@ In the settings, there are a couple of options that determine how the autosplitt
 #### Split by Level
 This is the default way to run the game from 1:1 to the end. Leave this on if you are doing any full game runs like any% or NoAbility.
 Turning this false makes it split per world.
-### Only Start From Level Load
+#### Only Start From Level Load
 This prevents the autosplitter automatically starting if you press R in a level while the timer is off. this allows runs to only start from the level select screen.
 #### Dev Mode
 Don’t use this unless you know what you are doing. This does disable some functionality.

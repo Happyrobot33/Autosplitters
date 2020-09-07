@@ -19,6 +19,8 @@ init
 	vars.deaths = 0; //reset the death count. Currently not fully functional
 	vars.deathCounted = false; //determine if we have already counted a death. does work
 	vars.newLevelStart = false; //determine if a new level was started
+        vars.wasInMenu = false; //used for checking whether we were just in menu, it's just old.inmenu
+        vars.lastLevel = 0; //used for checking what the previous level was, old.level apparently too slow.
 }
 
 //triggers every livesplit tick
@@ -81,7 +83,7 @@ start
 	vars.deaths = 0; //reset deaths
 	
 	if(vars.inMenu)
-		vars.wasInMenu = vars.inMenu; // wasInMenu basically is just old.inMenu. It just tells us if we were just in the mnu
+		vars.wasInMenu = vars.inMenu; // wasInMenu basically is just old.inMenu. It just tells us if we were just in the menu
 	
 	// If we were in the menu and we don't want to start in levels start OR if we want to start in levels and we are in game start
 	vars.inLevel = ((vars.wasInMenu && settings["onlyStartFromLoad"]) || !settings["onlyStartFromLoad"]); 

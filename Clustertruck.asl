@@ -36,6 +36,7 @@ init {
 
 update {
 	if (current.inMenuVal == 0) return false;
+
 	vars.inMenu = current.inMenuVal != 108 && current.inMenuVal != 109;
 	if (!old.dead && current.dead) vars.deaths++;
 
@@ -53,7 +54,10 @@ update {
 }
 
 start {
-	if (!(old.playing && !old.dead) && current.playing) {
+	current.isInMenu = vars.inMenu;
+	bool inLevel = settings["onlyStartFromLoad"] ? old.isInMenu && !current.isInMenu : true;
+	if (!current.isInMenu && inLevel && current.level % 10 == 1 && old.mapTime == 0 && current.mapTime > 0) {
+		vars.deaths = 0;
 		vars.startTime = current.totalTime;
 		return true;
 	}

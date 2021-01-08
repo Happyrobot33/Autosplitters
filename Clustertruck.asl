@@ -1,6 +1,3 @@
-// Original script by Happyrobot33.
-// Enhancements by Ero.
-
 /*
  * GameManager : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14   * info : "mono.dll", 0x20B574, 0x10, 0x158
  * * 0x0, 0xC : static fields,                                   * * 0x4        : darkWorld (bool),
@@ -18,21 +15,28 @@
  *   * 0x91 : walking (bool),                                    * * 0x38       : paused (bool),
  *   * 0xD0 : boosting (bool),                                   * * 0x44       : currentChristmasLevel (int),
  * * 0x5C : done (bool),                                         * * 0x50       : currentHalloweenLevel (int),
- * * 0x5C : won (bool),                                          * * 0x54       : currentLevel (int),
+ * * 0x5D : won (bool),                                          * * 0x54       : currentLevel (int),
  * * 0x68 : sinceWon (float)                                     * * 0x58       : currentWorld (int)
+ *
+ * steam_WorkshopHandler : "mono.dll", 0x20B574, 0x10, 0x130, 0x4
+ * * 0x78, 0x14 : RealMapName (string),
+ * * 0x90       : time (float),
+ * * 0x94       : score (int),
+ * * 0x98       : currentRetryCount (int)
  */
 
 state("Clustertruck") {
-	bool playing    : "mono.dll", 0x20B574, 0x10, 0x158, 0x31;
-	bool paused     : "mono.dll", 0x20B574, 0x10, 0x158, 0x38;
-	int level       : "mono.dll", 0x20B574, 0x10, 0x158, 0x54;
-	int world       : "mono.dll", 0x20B574, 0x10, 0x158, 0x58;
-	bool dead       : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x14, 0x7D;
-	float mapTime   : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x0;
-	float totalTime : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x4;
-	int mapDeaths   : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x8;
-	int totalDeaths : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0xC;
-	int inMenuVal   : "mono.dll", 0x1F30AC, 0x7D4, 0xC, 0x40, 0x90;
+	float workshopTime     : "mono.dll", 0x20B574, 0x10, 0x130, 0x4, 0x90;
+
+	int level              : "mono.dll", 0x20B574, 0x10, 0x158, 0x54;
+	int world              : "mono.dll", 0x20B574, 0x10, 0x158, 0x58;
+
+	float mapTime          : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x0;
+	float totalTime        : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x4;
+	bool dead              : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x14, 0x7D;
+	float framesSinceStart : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x14, 0x88;
+
+	int inMenuVal          : "mono.dll", 0x1F30AC, 0x7D4, 0xC, 0x40, 0x90;
 }
 
 startup {
@@ -47,10 +51,13 @@ startup {
 		settings.Add(s.Item1, s.Item2, s.Item3);
 		settings.SetToolTip(s.Item1, s.Item4);
 	}
+
+	refreshRate = 1000;
 }
 
 init {
-	vars.inMenu = true;
+	current.isInLevel = true;
+	vars.loadedIn = false;
 	vars.deaths = 0;
 	vars.startTime = 0;
 }
@@ -58,47 +65,45 @@ init {
 update {
 	if (current.inMenuVal == 0) return false;
 
-	vars.inMenu = current.inMenuVal != 108 && current.inMenuVal != 109;
-	if (!old.dead && current.dead) vars.deaths++;
+	current.isInMenu = current.inMenuVal != 108 && current.inMenuVal != 109;
+	if (old.workshopTime != current.workshopTime) current.isInLevel = false;
+	if (old.framesSinceStart == 0.0 && current.framesSinceStart > 0.0) current.isInLevel = true;
 
-	if (settings["devMode"])
-		print(
-			"Current Level: " + current.level + "\n" +
-			"Current World: " + current.world + "\n" +
-			"Current Level in World:" + current.world + ":" + (current.level % 10) + "\n\n" +
-			"Level Time: " + current.mapTime + "\n" +
-			"Total Time: " + (current.totalTime + current.mapTime - vars.startTime) + "\n" +
-			"Dead: " + current.dead + "\n" +
-			"Deaths: " + vars.deaths + "\n\n" +
-			"Are we in the menu?: " + vars.inMenu + "(" + current.inMenuVal + ")"
-		);
+	if (settings["devMode"]) {
+		if (!old.dead && current.dead) vars.deaths++;
+		print("Current Level: " + current.level);
+		print("Current World: " + current.world);
+		print("Current Level in World: " + current.world + ":" + current.level % 10);
+		print("Level Time: " + current.mapTime);
+		print("Total Time: " + (current.totalTime + current.mapTime - vars.startTime));
+		print("Dead: " + current.dead);
+		print("Deaths: " + vars.deaths);
+		print("Are we in the menu?: " + current.isInMenu + " (" + current.inMenuVal + ")");
+	}
 }
 
 start {
-	current.isInMenu = vars.inMenu;
-	bool inLevel = settings["onlyStartFromLoad"] ? old.isInMenu && !current.isInMenu : true;
-	if (!current.isInMenu && inLevel && current.level % 10 == 1 && old.mapTime == 0 && current.mapTime > 0) {
+	if (settings["onlyStartFromLoad"]) {
+		if (old.isInMenu && !current.isInMenu) vars.loadedIn = true;
+	} else vars.loadedIn = true;
+
+	if (vars.loadedIn && !current.isInMenu && current.level % 10 == 1 && old.framesSinceStart == 0.0 && current.framesSinceStart > 0.0) {
 		vars.deaths = 0;
 		vars.startTime = current.totalTime;
+		vars.loadedIn = false;
 		return true;
 	}
 }
 
 split {
-	if (old.totalTime != current.totalTime) return settings["levelSplit"] ? true : current.level % 10 == 0;
+	if (old.workshopTime != current.workshopTime)
+		return settings["levelSplit"] ? true : current.level % 10 == 0;
 }
 
 reset {
-	current.isInMenu = vars.inMenu;
 	return !old.isInMenu && current.isInMenu;
 }
 
-gameTime {
-	var timePlaying = TimeSpan.FromSeconds(current.totalTime + current.mapTime - vars.startTime);
-	var timeScore = TimeSpan.FromSeconds(current.totalTime - vars.startTime);
-	return current.playing ? timePlaying : timeScore;
-}
-
 isLoading {
-	return true;
+	return !current.isInLevel;
 }

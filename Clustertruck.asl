@@ -60,6 +60,7 @@ init {
 	vars.loadedIn = false;
 	vars.deaths = 0;
 	vars.startTime = 0;
+	vars.currentSplit = 0;
 }
 
 update {
@@ -83,6 +84,7 @@ update {
 }
 
 start {
+	vars.currentSplit = 0;
 	if (settings["onlyStartFromLoad"]) {
 		if (old.isInMenu && !current.isInMenu) vars.loadedIn = true;
 	} else vars.loadedIn = true;
@@ -97,11 +99,17 @@ start {
 
 split {
 	if (old.workshopTime != current.workshopTime)
+	{
+		vars.currentSplit++;
 		return settings["levelSplit"] ? true : current.level % 10 == 0;
+	}
+		
 }
 
 reset {
-	return !old.isInMenu && current.isInMenu;
+	// If in menu or reset in first level, restart the timer if reset option is on
+	// Adjust current.mapTime <= 0.01 if there are any issues with it not resetting
+	return (!old.isInMenu && current.isInMenu) || (current.level % 10 == 1 &&  vars.currentSplit == 0 && current.mapTime <= 0.01);
 }
 
 isLoading {

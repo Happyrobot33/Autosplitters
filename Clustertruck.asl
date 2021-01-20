@@ -109,7 +109,7 @@ split {
 reset {
 	// If in menu or reset in first level, restart the timer if reset option is on
 	// Adjust current.mapTime <= 0.01 if there are any issues with it not resetting
-	return (!old.isInMenu && current.isInMenu) || (current.level % 10 == 1 &&  vars.currentSplit == 0 && current.mapTime <= 0.01);
+	return (!old.isInMenu && current.isInMenu) || (current.level % 10 == 1 &&  vars.currentSplit == 0 && current.mapTime <= 0.01 && current.workshopTime != 0);
 }
 
 isLoading {

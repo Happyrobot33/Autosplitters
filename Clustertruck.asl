@@ -43,7 +43,9 @@ startup {
 	var tB = (Func<string, bool, string, string, Tuple<string, bool, string, string>>) ((elmt1, elmt2, elmt3, elmt4) => { return Tuple.Create(elmt1, elmt2, elmt3, elmt4); });
 	var sB = new List<Tuple<string, bool, string, string>> {
 		tB("levelSplit", true, "Split by Level", "On splits per level, off splits per world."),
+		tB("resetInMenu", true, "Reset In Menu", "Autosplitter resets when going to the menu"),
 		tB("onlyStartFromLoad", false, "Only Start from Level Load", "Results in the timer only starting when loading\na level from the level select screen."),
+		tB("splitByWorldHolidays", false, "Split By World Holidays", "First 5 levels autosplitter will split for Holidays, afterwards split by world is every 10 levels"),
 		tB("devMode", false, "Developer Mode", "This enables dev mode, allowing for debugging.")
 	};
 
@@ -80,6 +82,7 @@ update {
 		print("Dead: " + current.dead);
 		print("Deaths: " + vars.deaths);
 		print("Are we in the menu?: " + current.isInMenu + " (" + current.inMenuVal + ")");
+		print("Are we in level?: " + current.isInLevel);
 	}
 }
 
@@ -101,7 +104,21 @@ split {
 	if (old.workshopTime != current.workshopTime)
 	{
 		vars.currentSplit++;
-		return settings["levelSplit"] ? true : current.level % 10 == 0;
+		if(settings["levelSplit"])
+		{
+			return true;
+		}
+		else
+		{
+			if(current.level % 10 == 0)
+			{
+				return true;
+			}
+			if(vars.currentSplit == 5 && settings["splitByWorldHolidays"])
+			{
+				return true;
+			}
+		}
 	}
 		
 }
@@ -109,9 +126,9 @@ split {
 reset {
 	// If in menu or reset in first level, restart the timer if reset option is on
 	// Adjust current.mapTime <= 0.01 if there are any issues with it not resetting
-	return (!old.isInMenu && current.isInMenu) || (current.level % 10 == 1 &&  vars.currentSplit == 0 && current.mapTime <= 0.01 && current.workshopTime != 0);
+	return (!old.isInMenu && current.isInMenu && settings["resetInMenu"]) || (current.level % 10 == 1 &&  vars.currentSplit == 0 && current.mapTime <= 0.01 && current.workshopTime != 0);
 }
 
 isLoading {
-	return !current.isInLevel;
+	return !current.isInLevel && !current.isInMenu;
 }

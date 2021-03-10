@@ -46,8 +46,8 @@ startup {
 		tB("resetInMenu", true, "Reset In Menu", "Autosplitter resets when going to the menu"),
 		tB("onlyStartFromLoad", false, "Only Start from Level Load", "Results in the timer only starting when loading\na level from the level select screen."),
 		tB("splitByWorldHolidays", false, "Split By World Holidays", "First 5 levels autosplitter will split for Holidays, afterwards split by world is every 10 levels"),
-		tB("devMode", false, "Developer Mode", "This enables dev mode, allowing for debugging."),
-		tB("startEveryLevel", false, "Start on every level", "Use this if you want to time ILs (empty split file recommended).")
+		tB("startEveryLevel", false, "Start on every level", "Use this if you want to time ILs (empty split file recommended)."),
+		tB("devMode", false, "Developer Mode", "This enables dev mode, allowing for debugging.")
 	};
 
 	foreach (var s in sB) {

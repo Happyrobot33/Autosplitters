@@ -46,7 +46,8 @@ startup {
 		tB("resetInMenu", true, "Reset In Menu", "Autosplitter resets when going to the menu"),
 		tB("onlyStartFromLoad", false, "Only Start from Level Load", "Results in the timer only starting when loading\na level from the level select screen."),
 		tB("splitByWorldHolidays", false, "Split By World Holidays", "First 5 levels autosplitter will split for Holidays, afterwards split by world is every 10 levels"),
-		tB("devMode", false, "Developer Mode", "This enables dev mode, allowing for debugging.")
+		tB("devMode", false, "Developer Mode", "This enables dev mode, allowing for debugging."),
+		tB("startEveryLevel", false, "Start on every level", "Use this if you want to time ILs (empty split file recommended).")
 	};
 
 	foreach (var s in sB) {
@@ -92,7 +93,7 @@ start {
 		if (old.isInMenu && !current.isInMenu) vars.loadedIn = true;
 	} else vars.loadedIn = true;
 
-	if (vars.loadedIn && !current.isInMenu && current.level % 10 == 1 && old.framesSinceStart == 0.0 && current.framesSinceStart > 0.0) {
+	if (vars.loadedIn && !current.isInMenu && (settings["startEveryLevel"] ? true : current.level % 10 == 1) && old.framesSinceStart == 0.0 && current.framesSinceStart > 0.0) {
 		vars.deaths = 0;
 		vars.startTime = current.totalTime;
 		vars.loadedIn = false;
@@ -126,7 +127,7 @@ split {
 reset {
 	// If in menu or reset in first level, restart the timer if reset option is on
 	// Adjust current.mapTime <= 0.01 if there are any issues with it not resetting
-	return (!old.isInMenu && current.isInMenu && settings["resetInMenu"]) || (current.level % 10 == 1 &&  vars.currentSplit == 0 && current.mapTime <= 0.01 && current.workshopTime != 0);
+	return (!old.isInMenu && current.isInMenu && settings["resetInMenu"]) || ((settings["startEveryLevel"] ? true : current.level % 10 == 1) && vars.currentSplit == 0 && current.mapTime <= 0.01 && current.workshopTime != 0);
 }
 
 isLoading {

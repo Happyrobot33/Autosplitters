@@ -29,107 +29,125 @@ state("Clustertruck") {
 	float workshopTime     : "mono.dll", 0x20B574, 0x10, 0x130, 0x4, 0x90;
 
 	int level              : "mono.dll", 0x20B574, 0x10, 0x158, 0x54;
+	int christmasLevel     : "mono.dll", 0x20B574, 0x10, 0x158, 0x44;
+	int halloweenLevel     : "mono.dll", 0x20B574, 0x10, 0x158, 0x50; 
 	int world              : "mono.dll", 0x20B574, 0x10, 0x158, 0x58;
 
-	float mapTime          : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x0;
-	float totalTime        : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x4;
-	bool dead              : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x14, 0x7D;
+	float gameTimer        : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x0, 0xC, 0x0; // mapTime
+	bool isDead            : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x14, 0x7D; // dead
 	float framesSinceStart : "mono.dll", 0x1F36AC, 0x20, 0xE80, 0x1C, 0x14, 0x14, 0x88;
 
 	int inMenuVal          : "mono.dll", 0x1F30AC, 0x7D4, 0xC, 0x40, 0x90;
 }
 
 startup {
-	var tB = (Func<string, bool, string, string, Tuple<string, bool, string, string>>) ((elmt1, elmt2, elmt3, elmt4) => { return Tuple.Create(elmt1, elmt2, elmt3, elmt4); });
-	var sB = new List<Tuple<string, bool, string, string>> {
-		tB("levelSplit", true, "Split by Level", "On splits per level, off splits per world."),
-		tB("resetInMenu", true, "Reset In Menu", "Autosplitter resets when going to the menu"),
-		tB("onlyStartFromLoad", false, "Only Start from Level Load", "Results in the timer only starting when loading\na level from the level select screen."),
-		tB("splitByWorldHolidays", false, "Split By World Holidays", "First 5 levels autosplitter will split for Holidays, afterwards split by world is every 10 levels"),
-		tB("startEveryLevel", false, "Start on every level", "Use this if you want to time ILs (empty split file recommended)."),
-		tB("devMode", false, "Developer Mode", "This enables dev mode, allowing for debugging.")
+	// Setting initialization
+	Object[,] settingsArray = new Object[,] {
+		{"reset", true, "Reset", "By itself does nothing, enable other reset options for it to do anything. False means other options are disabled", null},
+		{"resetFirstLevel", true, "Reset First Level", "Autosplitter resets when you restart or die on the first level", "reset"},
+		{"resetLevelBackwards", true, "Reset if Level Backwards", "Autosplitter resets if the level number decrements like if the player selects an earlier level", "reset"},
+		{"resetOnDeath", true, "Reset on Death", "Autosplitter resets when the player dies", "reset"},
+		{"resetInMenu", false, "Reset in Menu", "Autosplitter resets when going to the menu", "reset"},
+		{"levelSplit", true, "Split by Level", "On splits per level, off splits per world.", null},
+		{"onlyStartFromLoad", false, "Only Start From Level Load", "Results in the timer only starting when loading\na level from the level select screen", null},
+		{"startEveryLevel", false, "Start on Every Level", "Use this if you want to time ILs (empty split file recommended)", null},
+		{"devMode", false, "Developer Mode", "This enables developer mode, allowing for debugging", null}
 	};
-
-	foreach (var s in sB) {
-		settings.Add(s.Item1, s.Item2, s.Item3);
-		settings.SetToolTip(s.Item1, s.Item4);
+	for (int i = 0; i < settingsArray.GetLength(0); i++) {
+		settings.Add((string)settingsArray[i, 0], (bool)settingsArray[i, 1], (string)settingsArray[i, 2], (string)settingsArray[i, 4]);
+  		settings.SetToolTip((string)settingsArray[i, 0], (string)settingsArray[i, 3]);
 	}
 
 	refreshRate = 1000;
 }
 
 init {
-	current.isInLevel = true;
-	vars.loadedIn = false;
-	vars.deaths = 0;
-	vars.startTime = 0;
-	vars.currentSplit = 0;
+	vars.lastPlayedLevel = 0;
+	vars.lastPlayedChristmasLevel = 0;
+	vars.levelsCompleted = 0;
 }
 
 update {
-	if (current.inMenuVal == 0) return false;
+	// Don't run checking unless inMenuVal initialized
+	if (current.inMenuVal == 0) {
+		return false;	
+	}
 
+	// Set boolean for is in menu instead of random constant
 	current.isInMenu = current.inMenuVal != 108 && current.inMenuVal != 109;
-	if (old.workshopTime != current.workshopTime) current.isInLevel = false;
-	if (old.framesSinceStart == 0.0 && current.framesSinceStart > 0.0) current.isInLevel = true;
+	vars.firstGameplayFrame = old.framesSinceStart == 0 && current.framesSinceStart > 0;
+	vars.firstLevelCompleteFrame = old.workshopTime != current.workshopTime;
+
+	// A player spawn happens when a player enters a level, dies, or restarts a level. Important for resetOnRestart
+	if(current.level != old.level) {
+		vars.lastPlayedLevel = old.level;	
+		// Try removing this I dare you, the problem here is its not enough to just say current.christmasLevel = 5 because that never changes once you leave the world
+		vars.lastPlayedChristmasLevel = old.christmasLevel;
+	}
 
 	if (settings["devMode"]) {
-		if (!old.dead && current.dead) vars.deaths++;
+		print("------------------------------");
 		print("Current Level: " + current.level);
+		print("Current Christmas Level: " + current.christmasLevel);
+		print("Current Halloween Level: " + current.halloweenLevel);
+		print("Last Played Level: " + vars.lastPlayedLevel);
 		print("Current World: " + current.world);
-		print("Current Level in World: " + current.world + ":" + current.level % 10);
-		print("Level Time: " + current.mapTime);
-		print("Total Time: " + (current.totalTime + current.mapTime - vars.startTime));
-		print("Dead: " + current.dead);
-		print("Deaths: " + vars.deaths);
-		print("Are we in the menu?: " + current.isInMenu + " (" + current.inMenuVal + ")");
-		print("Are we in level?: " + current.isInLevel);
+		print("Levels Completed: " + vars.levelsCompleted);
+		print("Is In Menu: " + current.isInMenu);
+		print("Game Timer: " + current.gameTimer);
+		print("Frames Since Start: " + current.framesSinceStart);
+		print("Is Dead: " + current.isDead);
 	}
 }
 
 start {
-	vars.currentSplit = 0;
-	if (settings["onlyStartFromLoad"]) {
-		if (old.isInMenu && !current.isInMenu) vars.loadedIn = true;
-	} else vars.loadedIn = true;
+	bool start = 	
+		(!settings["onlyStartFromLoad"] || old.isInMenu) && 
+		!current.isInMenu && 
+		(settings["startEveryLevel"] ? true : current.level % 10 == 1) && 
+		vars.firstGameplayFrame;
 
-	if (vars.loadedIn && !current.isInMenu && (settings["startEveryLevel"] ? true : current.level % 10 == 1) && old.framesSinceStart == 0.0 && current.framesSinceStart > 0.0) {
-		vars.deaths = 0;
-		vars.startTime = current.totalTime;
-		vars.loadedIn = false;
+	if (start) {
+		vars.levelsCompleted = 0;
+		current.playerSpawns = 0;
+		vars.lastPlayedLevel = current.level;
+		vars.lastPlayedChristmasLevel = current.christmasLevel;
 		return true;
 	}
 }
 
 split {
-	if (old.workshopTime != current.workshopTime)
+	if(vars.firstLevelCompleteFrame)
 	{
-		vars.currentSplit++;
-		if(settings["levelSplit"])
-		{
-			return true;
-		}
-		else
-		{
-			if(current.level % 10 == 0)
-			{
-				return true;
-			}
-			if(vars.currentSplit == 5 && settings["splitByWorldHolidays"])
-			{
-				return true;
-			}
-		}
+		vars.levelsCompleted++;
+		return 
+			settings["levelSplit"] ||
+			current.level % 10 == 0 || 
+			(current.christmasLevel == 5 && vars.lastPlayedChristmasLevel == 4);
 	}
-		
 }
 
 reset {
-	// If in menu or reset in first level, restart the timer if reset option is on
-	// Adjust current.mapTime <= 0.01 if there are any issues with it not resetting
-	return (!old.isInMenu && current.isInMenu && settings["resetInMenu"]) || ((settings["startEveryLevel"] ? true : current.level % 10 == 1) && vars.currentSplit == 0 && current.mapTime <= 0.01 && current.workshopTime != 0);
+	// 0.01s, if the time is 0 again, then we want to reset
+	bool resetInLevel = 
+		settings["resetFirstLevel"] && 
+		(settings["startEveryLevel"] ? true : vars.levelsCompleted == 0) && 
+		current.gameTimer < 0.01 && 
+		current.workshopTime != 0;
+
+	bool resetBackwards = 
+		settings["resetLevelBackwards"] && current.level - vars.lastPlayedLevel <= -1 && !current.isInMenu &&
+		!(current.christmasLevel == 5 && current.halloweenLevel == 1) &&
+		!(current.halloweenLevel == 10 && current.level == 1 && vars.levelsCompleted == 15);
+
+	bool resetMenu = settings["resetInMenu"] && current.isInMenu && !old.isInMenu;
+	bool resetOnDeath = settings["resetOnDeath"] && current.isDead;
+
+	return resetInLevel || resetBackwards || resetMenu || resetOnDeath;
 }
 
 isLoading {
-	return !current.isInLevel && !current.isInMenu;
+	bool isPlaying = vars.firstGameplayFrame || current.isInMenu;
+	if (vars.firstLevelCompleteFrame) { return true; }
+	if (isPlaying) { return false; }
 }

@@ -52,7 +52,7 @@ startup {
 		{ "reset"              , true  , "Reset"              , null    , "Disable or enable all automatic reset functionality."                      },
 		{ "resetFirstLevel"    , true  , "In first level"     , "reset" , "Reset the timer when you restart or die on the first level."               },
 		{ "resetPreviousLevel" , true  , "On previous level"  , "reset" , "Reset the timer when a previous level is selected."                        },
-		{ "resetOnDeath"       , true  , "On death"           , "reset" , "Reset the timer when the player dies."                                     },
+		{ "resetOnDeath"       , false , "On death"           , "reset" , "Reset the timer when the player dies."                                     },
 		{ "resetInMenu"        , false , "In menu"            , "reset" , "Reset the timer when going to the menu."                                   },
 		{ "splitByLevel"       , true  , "Split by level"     , null    , "Enable to use level splits, disable to use world splits."                  },
 		{ "startInLevel"       , true  , "Start in level"     , null    , "Start the timer when restarting in a level."                               },

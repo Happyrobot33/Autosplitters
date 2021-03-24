@@ -16,65 +16,65 @@ To use, just go to Edit Splits, Ensure that the game dropdown is set to Clustert
 ## Settings
 In the settings you can change how you want the autosplitter to behave.
 
-#### Reset
-*Default: On*
+### Reset
 <ul>
 
+###### Default: On
 Enables or disables all automatic reset functionality. This option has several sub-options for enabling or disabling specific automatic resetting:
 
-##### In first level
-*Default: On*
+#### In first level
 <ul>
 
+###### Default: On
 Enabling this will reset the timer when you restart or die on the first level of any world. Enabling the *Start in any level* setting will change this to reset the timer when you restart or die on any level.
 </ul>
 
-##### On previous level
-*Default: On*
+#### On previous level
 <ul>
 
+###### Default: On
 Enabling this will reset the timer when a previous level is selected in any of the level select screens.
 </ul>
 
-##### On death
-*Default: Off*
+#### On death
 <ul>
 
+###### Default: Off
 Enabling this will reset the timer any time the player dies. This would for example be used for deathless category attempts.
 </ul>
 
-##### In menu
-*Default: Off*
+#### In menu
 <ul>
 
+###### Default: Off
 Enabling this will reset the timer when going back to the menu.
 </ul></ul>
 
-#### Split by level
-*Default: On*
+### Split by level
 <ul>
 
+###### Default: On
 Enable this option if you want to use per level splits. Disable to use per world splits.
 </ul>
 
-#### Start in level
-*Default: On*
+### Start in level
 <ul>
 
+###### Default: On
 Enable this to still start the timer when restarting in a level. Disable to only start the timer when entering a level from the level selection screen.
 </ul>
 
-#### Start in any level
-*Default: Off*
+### Start in any level
 <ul>
 
+###### Default: Off
 Enable this to start the timer in any level. Disable to only start the timer on the first level of any world. This can be used when you want to use livesplit to time individual levels.
 </ul>
 
-#### Debug mode
-*Default: Off*
+### Debug mode
 <ul>
 
+###### Default: Off
 Enable this to turn on debug logging. Use [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview) to view this output.
 </ul>
 
